@@ -8,6 +8,7 @@ pipeline{
 		}
 		stage("run test"){
 			steps{
+			echo 'python3'
 			sh "python3 fun_test.py"
 				}
 		}
