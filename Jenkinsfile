@@ -9,7 +9,7 @@ pipeline{
 		stage("run test"){
 			steps{
 			echo 'python3'
-		        bat 'md Jenkins_test'
+		        bat 'python3 fun_test.py'
 				}
 		}
 	}
