@@ -8,7 +8,7 @@ pipeline
            stage("first"){
                steps {
 	                  /*def name='dylan'*/
-                          echo 'hello ${parameters.PERSON}'
+                          echo "hello ${params.PERSON}"
                }
            }
 	    stage("second"){
