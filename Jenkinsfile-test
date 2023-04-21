@@ -1,0 +1,77 @@
+timestamps 
+{
+	/* Timeout if build take more than 30 minutes. This depend on previous builds and it is better to check how much time is enough before using it.*/
+	timeout(time: 5, unit: 'MINUTES') {
+		node () 
+		{
+			def build_ok = true
+			/* Stages are defined in try catch, because we want to execute stage SendEmail even if some other stage fail. Try catch could be used anywhere if you want to continue with the next stages even if the current one failed*/
+			try 
+			{
+				/* Check out stage is our first stage. This is where the rest of the source is check out. It will take the Repository URL from configuration that is on Jenkins.*/
+				stage ('TrioPC - Checkout') 
+				{	
+                    checkout([$class: 'SubversionSCM', additionalCredentials: [], excludedCommitMessages: '', excludedRegions: '', excludedRevprop: '', excludedUsers: '', 
+					filterChangelog: false, ignoreDirPropChanges: false, includedRegions: '', 
+					locations: [[cancelProcessOnExternalsFail: true, credentialsId: "hyperion_svn", depthOption: 'infinity', ignoreExternalsOption: false, local: '.', remote: 'git@github.com:Hueylove/test.git']], 
+					quietOperation: false, workspaceUpdater: [$class: 'UpdateWithCleanUpdater']]);
+				}
+
+				stage('TrioPC - Build x86')
+				{
+					 echo 'BuildMe.bat x86'
+				}
+
+				stage('TrioPC - Build x64')
+				{
+					 echo 'BuildMe.bat x64'
+				}
+
+                /* Post Build Actions. If we have any info to publish after
+                   everything is executed we do it in that stage.*/
+                stage ('TrioPC - Post build actions') {
+                    recordIssues(tools: [msBuild()], enabledForFailure: true);
+					archiveArtifacts artifacts: 'Development/Development_Source/installers/Release/x86/PCMotion*x86-*.msi', fingerprint: true, followSymlinks: false, onlyIfSuccessful: true;
+					archiveArtifacts artifacts: 'Development/Development_Source/installers/Release/x64/PCMotion*x64-*.msi', fingerprint: true, followSymlinks: false, onlyIfSuccessful: true;
+                }
+			}	
+				
+			catch (e) 
+			{
+				build_ok = false
+				echo e.toString()
+			}
+			/* Last stage is to send the E-Mail if build failed. Which uses the SendEmailNotification method. */
+			/*try {
+				stage('PCMotion_Release - E-Mail Notification') {
+					def build_status = "UNKNOWN"
+					def send_email = false
+					if (build_ok) {
+						build_status = "SUCCESS"
+						/* We send build back to normal email if current result is success and previous build failed*/
+						def previousResult = currentBuild.getPreviousBuild()?.result
+						if (previousResult != build_status) {
+							send_email = true;
+						}
+					} else {
+						build_status = "FAILURE"
+						send_email = true;
+					}
+
+					currentBuild.result = build_status
+
+					if (send_email) {
+						emailext(body: 'Build URL: $BUILD_URL <br> Project: $PROJECT_NAME <br>  Date of build: ${BUILD_TIMESTAMP}  <br><br> <p style="background-color:blue;">CHANGES</p> <br> <pre>${CHANGES}</pre> <br><br> -------------------------------------------------- <br> <p style="background-color:blue;">CONSOLE OUTPUT</p> <pre>${BUILD_LOG, maxLines=100, escapeHtml=false}</pre>',
+								 mimeType: 'text/html',
+								 subject: '$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS!',
+								 /*to: 'svarghese@triomotion.com, rellis@triomotion.com',*/
+								 recipientProviders: [[$class: 'CulpritsRecipientProvider'], [$class: 'RequesterRecipientProvider']])
+					}
+				}
+			} catch (e) {
+				echo e.toString()
+			}*/
+		}
+	
+	}
+}
