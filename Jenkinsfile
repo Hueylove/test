@@ -1,17 +1,22 @@
-print("hhhhhhhhhh####################")
-pipeline{
-	agent any
-	stages{
-		stage("first"){
-			steps{
-				echo 'hello dylan'
-				}
-		}
-		stage("run test"){
-			steps{
-			echo 'python3'
-		        bat 'python fun_test.py'
-				}
-		}
-	}
+pipeline
+{
+    agent any
+    stages{
+           stage("first"){
+               steps {
+                          echo 'hello world'
+               }
+           }
+           stage("run test"){
+               steps {
+                           echo 'run test' 
+               }
+           }
+           }
+                post{
+                           always{
+                                      echo 'always say goodbay'
+                                  }
+                     }
 }
+  
