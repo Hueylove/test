@@ -4,7 +4,8 @@ pipeline
     stages{
            stage("first"){
                steps {
-                          echo 'hello world'
+	                  def name='dylan'
+                          echo 'hello ${name}'
                }
            }
 	    stage("second"){
