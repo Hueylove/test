@@ -7,6 +7,12 @@ pipeline
                           echo 'hello world'
                }
            }
+	    stage("second"){
+               steps {
+                          echo 'build the project'
+               }
+           }
+
            stage("run test"){
                steps {
                            echo 'run test' 
