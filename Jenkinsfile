@@ -22,7 +22,7 @@ pipeline
            }
                 post{
                            always{
-                                      echo 'always say goodbay'
+                                      echo 'always say goodbay finished'
                                   }
                      }
 }
